@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: flowstate
+  profiles:
+    active: dev
+
+  #H2 Db Configuration
+  datasource:
+    url: jdbc:h2:mem:flowstatedb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  #JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+#actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    description: Focus and Productivity Intelligence Platform built with Spring boot 4
+    version: 1.0.0
+    author: Zwe Yan Naing Aung
+
+# Custom application properties
+app:
+  name: Flowstate
+  version: 1.0.0
+  max-tasks-per-page: 10
