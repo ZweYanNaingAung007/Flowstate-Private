@@ -1,250 +1,531 @@
-# Flowstate — Focus & Productivity Intelligence Platform
+# Flowstate
 
-Flowstate is a backend productivity platform built with Spring Boot. It is designed to help individuals organize their work, manage priorities, track progress, and develop better working habits.
+**A Focus and Productivity Intelligence Platform**(I implemented Swagger UI to make it easier to test)
 
-The platform combines task management, user management, and focused work sessions to provide a foundation for understanding and improving personal productivity. It emphasizes RESTful API design, secure data access, maintainable architecture, and efficient backend operations.
+Flowstate is a backend-focused productivity platform designed to help users organize their work, track task completion, and gain insights into their productivity.
 
-## Features
+Rather than focusing solely on task management, Flowstate aims to connect task completion with actual time spent working, eventually helping users understand not just what they accomplish, but how they spend their time accomplishing it.
 
-### Task Management
+The application is built with Java and Spring Boot, following a layered architecture with an emphasis on security, maintainability, data integrity, and reliable API design.
 
-- Create, retrieve, update, and delete tasks.
-- Search tasks by title or completion status.
-- Organize tasks into categories.
-- Pagination and sorting support.
-- Task status tracking.
-- Soft deletion and task restoration.
+---
 
-### User Management & Security
+### Interactive API Documentation (Swagger UI)
 
-- User registration and authentication.
-- JWT-based authentication and authorization.
-- User-specific task and category management.
-- Access control to ensure users can only manage their own resources.
+Flowstate integrates Swagger UI through Springdoc OpenAPI, providing interactive API documentation that makes it easier for reviewers and developers to explore and test the REST API.
 
-### Focus Session Management
+- Browse available API endpoints and inspect request/response schemas.
+- Execute API requests directly from the browser.
+- Authenticate using JWT bearer tokens to test protected endpoints.
+- Explore authentication, task management, category management, and analytics APIs.
 
-- Start, complete, and cancel focus sessions.
-- Associate focus sessions with tasks.
-- Track planned and actual focus durations.
-- Maintain focus session history.
+**Access:** `http://localhost:8080/swagger-ui/index.html`
 
-### Productivity Analytics
+**Port Configuration:** Flowstate uses port `8080` by default. If port `8080` is already occupied on your machine, change the port by adding the following property to `src/main/resources/application.properties`:
 
-- Track daily and weekly focused time.
-- Monitor completed focus sessions.
-- Analyze time spent on individual tasks.
-- Generate productivity statistics.
-
-### Backend Engineering
-
-- DTO-based request and response handling.
-- Input validation.
-- Centralized exception handling.
-- Unit and integration testing.
-- API rate limiting.
-- Caching for frequently accessed data.
-- Application monitoring with Spring Boot Actuator.
-
-## Technology Stack
-
-- **Language:** Java 21
-- **Framework:** Spring Boot 4
-- **Web:** Spring Web
-- **Persistence:** Spring Data JPA, Hibernate
-- **Database:** H2
-- **Security:** Spring Security, JWT
-- **Validation:** Jakarta Bean Validation
-- **Caching:** Spring Cache, Caffeine
-- **Rate Limiting:** Bucket4j
-- **Testing:** JUnit 5, Mockito, Spring Boot Test, MockMvc
-- **API Documentation:** Swagger / OpenAPI
-- **Build Tool:** Maven
-- **Other:** Lombok, Spring Boot Actuator
-
-## Prerequisites
-
-- Java 21 or higher
-- Maven 3.6 or higher
-
-## API Endpoints
-
-All API endpoints are organized under the `/api/v1` base path.
-
-### Task Management
-
-All task endpoints are prefixed with `/api/v1/tasks`.
-
-#### Get All Tasks
-
-- **GET** `/api/v1/tasks`
-- Query Parameters:
-  - `page` (default: 0)
-  - `size` (default: 10)
-  - `sortBy` (default: `createdAt`)
-  - `sortDir` (default: `DESC`)
-- Returns a paginated list of tasks.
-
-#### Get Task by ID
-
-- **GET** `/api/v1/tasks/{id}`
-- Path Variable: `id` (Long)
-- Returns a specific task.
-
-#### Create Task
-
-- **POST** `/api/v1/tasks`
-- Body: `TaskRequest` JSON
-- Creates and returns a task.
-
-#### Update Task
-
-- **PUT** `/api/v1/tasks/{id}`
-- Path Variable: `id` (Long)
-- Body: `TaskRequest` JSON
-- Updates and returns the specified task.
-
-#### Delete Task
-
-- **DELETE** `/api/v1/tasks/{id}`
-- Path Variable: `id` (Long)
-- Soft-deletes the specified task.
-
-#### Search Tasks
-
-- **GET** `/api/v1/tasks/search`
-- Query Parameters:
-  - `title` (optional)
-  - `completed` (optional, Boolean)
-  - `page`, `size`, `sortBy`, `sortDir`
-- Returns paginated search results.
-
-#### Get Tasks by Completion Status
-
-- **GET** `/api/v1/tasks/completed/{status}`
-- Path Variable: `status` (Boolean)
-- Returns tasks matching the specified completion status.
-
-#### Search Tasks by Title
-
-- **GET** `/api/v1/tasks/search-by-title`
-- Query Parameter: `title`
-- Returns tasks matching the specified title.
-
-### Category Management
-
-All category endpoints are prefixed with `/api/v1/categories`.
-
-#### Get Category by ID
-
-- **GET** `/api/v1/categories/{id}`
-- Path Variable: `id` (Long)
-- Returns a specific category.
-
-#### Create Category
-
-- **POST** `/api/v1/categories`
-- Body: Category JSON
-- Creates and returns a category.
-
-### User Management
-
-All user endpoints are prefixed with `/api/v1/auth` or `/api/v1/users`.
-
-Planned endpoints:
-
-- **POST** `/api/v1/auth/register` — Register a new user.
-- **POST** `/api/v1/auth/login` — Authenticate and receive a JWT.
-- **GET** `/api/v1/users/me` — Retrieve the authenticated user's profile.
-
-### Focus Session Management
-
-All focus session endpoints are prefixed with `/api/v1/focus-sessions`.
-
-Planned endpoints:
-
-- **POST** `/api/v1/focus-sessions/start` — Start a focus session.
-- **PATCH** `/api/v1/focus-sessions/{id}/complete` — Complete a focus session.
-- **PATCH** `/api/v1/focus-sessions/{id}/cancel` — Cancel a focus session.
-- **GET** `/api/v1/focus-sessions` — Retrieve focus session history.
-- **GET** `/api/v1/focus-sessions/{id}` — Retrieve a specific focus session.
-- **GET** `/api/v1/focus-sessions/statistics` — Retrieve productivity statistics.
-
-### Application Information
-
-#### Get App Info
-
-- **GET** `/api/v1/info`
-- Returns application name, version, and maximum tasks per page.
-
-#### Get Advanced App Info
-
-- **GET** `/api/v1/info-advanced`
-- Returns application configuration information.
-
-## Database
-
-Flowstate uses an H2 in-memory database for local development.
-
-No external database installation is required.
-
-The database is recreated when the application restarts. It is intended for development and demonstration purposes.
-
-## Monitoring
-
-Spring Boot Actuator provides application monitoring and management capabilities.
-
-Available endpoints may include:
-
-- `/actuator/health` — Application health status.
-- `/actuator/info` — Application information.
-- `/actuator/metrics` — Application metrics.
-- `/actuator/env` — Environment properties.
-- `/actuator/loggers` — Logger configuration.
-- `/actuator/beans` — Spring beans.
-- `/actuator/mappings` — Request mappings.
-
-Endpoint availability depends on the application's Actuator configuration.
-
-## Testing
-
-The project uses a combination of unit and integration testing.
-
-Testing technologies include:
-
-- **JUnit 5** for test organization and execution.
-- **Mockito** for mocking dependencies.
-- **Spring Boot Test** for application-level testing.
-- **MockMvc** for testing REST API endpoints.
-
-Tests cover business logic, validation, authentication, authorization, and API behavior as these features are implemented.
-
-## Running Locally
-
-### 1. Clone the repository
-
-### 2. Navigate to the project directory
-
-```bash
-cd flowstate
+```properties
+server.port=8081
 ```
 
-### 3. Run the application
+Replace `8081` with any available port. After restarting the application, access Swagger UI at:
 
-On Windows:
+`http://localhost:8081/swagger-ui/index.html`
 
-```bash
-mvnw.cmd spring-boot:run
-```
+Note: Task categories are optional. To create a task without a category, simply remove the categoryId field from the JSON request body when testing POST /api/v1/tasks. You can also explicitly set "categoryId": null.
 
-On Linux or macOS:
-
-```bash
-./mvnw spring-boot:run
-```
+---
 
 ## Project Status
 
 **Under active development.**
 
-Flowstate is being developed incrementally, with a focus on backend architecture, security, data management, performance optimization, and automated testing.
+The current implementation provides user authentication, task management, category organization, and productivity analytics through a RESTful API.
+
+Development is progressing incrementally, with a focus on backend architecture, application security, data management, performance, and automated testing.
+
+Future development will expand Flowstate's productivity-tracking capabilities through focus session management, time-based analytics, caching, and additional performance optimizations.
+
+---
+
+## Features
+
+### Authentication and Security
+
+- User registration and login.
+- JWT-based authentication using HS256.
+- Password hashing with BCrypt.
+- Stateless authentication.
+- User-specific resource ownership.
+- Protected API endpoints.
+
+### Task Management
+
+- Create, retrieve, update, and delete tasks.
+- Soft deletion to preserve existing records.
+- Task completion tracking.
+- Completion timestamps.
+- Category assignment.
+- Pagination, sorting, and filtering.
+- Search tasks by title and completion status.
+
+### Category Management
+
+- Create and retrieve task categories.
+- Category assignment to tasks.
+- Database-level category name uniqueness.
+- Support for uncategorized tasks.
+
+### Productivity Analytics
+
+- Overall task statistics.
+- Completed and pending task counts.
+- Task completion rates.
+- Daily productivity summaries.
+- Weekly productivity summaries.
+- Category-based productivity breakdowns.
+
+### Application Reliability
+
+- Centralized exception handling.
+- Request validation.
+- Validated application configuration.
+- Automated unit and integration testing.
+- Spring Boot Actuator health endpoint configuration.
+
+---
+
+## Technology Stack
+
+| Technology           | Purpose                          |
+| -------------------- | -------------------------------- |
+| Java 21              | Primary programming language     |
+| Spring Boot 4        | Application framework            |
+| Spring Web MVC       | REST API development             |
+| Spring Security      | Authentication and authorization |
+| Spring Data JPA      | Data persistence                 |
+| Hibernate            | Object-relational mapping        |
+| H2 Database          | In-memory database               |
+| Maven                | Dependency and build management  |
+| JWT                  | Stateless authentication         |
+| BCrypt               | Password hashing                 |
+| JUnit 5              | Automated testing                |
+| Mockito              | Mocking and unit testing         |
+| Spring Boot Actuator | Application health monitoring    |
+
+---
+
+## Architecture
+
+Flowstate follows a layered architecture that separates HTTP handling, business logic, persistence, and data representation.
+
+| Layer      | Responsibility                                          |
+| ---------- | ------------------------------------------------------- |
+| Controller | Handles HTTP requests, responses, and endpoint routing. |
+| Service    | Implements business logic and application rules.        |
+| Repository | Handles database access through Spring Data JPA.        |
+| Entity     | Represents persistent domain objects.                   |
+| DTO        | Defines request and response structures.                |
+| Mapper     | Converts between entities and DTOs.                     |
+| Config     | Configures application properties and security.         |
+
+### Key Engineering Decisions
+
+**1. Stateless Authentication**
+
+JWT authentication allows clients to authenticate requests without maintaining server-side HTTP sessions.
+
+**2. User Ownership Isolation**
+
+Task retrieval, modification, and deletion operations are restricted to the authenticated user's records.
+
+**3. Soft Deletion**
+
+Tasks are marked as deleted rather than physically removed, preserving records while excluding them from normal queries and analytics.
+
+**4. DTO-Based API Design**
+
+Request and response DTOs separate the public API contract from internal database entities.
+
+**5. Centralized Exception Handling**
+
+Application exceptions and validation errors are handled centrally to provide consistent HTTP responses.
+
+**6. Layered Architecture**
+
+Controllers, services, and repositories have distinct responsibilities, making the application easier to maintain and extend.
+
+---
+
+## API Documentation
+
+Base path: `/api/v1`
+
+### Authentication
+
+| Method | Endpoint         | Description                   |
+| ------ | ---------------- | ----------------------------- |
+| POST   | `/auth/register` | Register a new user           |
+| POST   | `/auth/login`    | Authenticate and obtain a JWT |
+
+### Tasks
+
+| Method | Endpoint                    | Description                       |
+| ------ | --------------------------- | --------------------------------- |
+| GET    | `/tasks`                    | Retrieve paginated tasks          |
+| GET    | `/tasks/{id}`               | Retrieve a specific task          |
+| POST   | `/tasks`                    | Create a task                     |
+| PUT    | `/tasks/{id}`               | Update a task                     |
+| DELETE | `/tasks/{id}`               | Soft-delete a task                |
+| GET    | `/tasks/search`             | Search and filter tasks           |
+| GET    | `/tasks/completed/{status}` | Filter tasks by completion status |
+| GET    | `/tasks/search-by-title`    | Search tasks by title             |
+
+### Categories
+
+| Method | Endpoint              | Description         |
+| ------ | --------------------- | ------------------- |
+| GET    | `/categories?id={id}` | Retrieve a category |
+| POST   | `/categories`         | Create a category   |
+
+### Analytics
+
+| Method | Endpoint                | Description                              |
+| ------ | ----------------------- | ---------------------------------------- |
+| GET    | `/analytics/overview`   | Retrieve overall productivity statistics |
+| GET    | `/analytics/daily`      | Retrieve daily completion statistics     |
+| GET    | `/analytics/weekly`     | Retrieve weekly productivity statistics  |
+| GET    | `/analytics/categories` | Retrieve category-based statistics       |
+
+### Application Information
+
+| Method | Endpoint | Description                      |
+| ------ | -------- | -------------------------------- |
+| GET    | `/info`  | Retrieve application information |
+
+### Health Monitoring
+
+| Method | Endpoint           | Description                        |
+| ------ | ------------------ | ---------------------------------- |
+| GET    | `/actuator/health` | Retrieve application health status |
+
+Authenticated endpoints require a valid JWT in the Authorization header:
+
+`Authorization: Bearer <your-token>`
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Java 21
+- Maven 3.9 or later
+- Git
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ZweYanNaingAung007/Flowstate-Private.git
+cd Flowstate-Private
+```
+
+The repository is currently private. You need repository access to clone it.
+
+### 2. Configure the JWT Secret
+
+The application requires a Base64-encoded JWT secret supplied through the `JWT_SECRET` environment variable.
+
+For PowerShell:
+
+```powershell
+$env:JWT_SECRET = [Convert]::ToBase64String(
+    [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
+)
+```
+
+This generates a random 256-bit secret for local development.
+
+**Testing configuration:** Tests use a separate dummy JWT secret defined in `src/test/resources/application.properties`. This allows the test suite to run independently without requiring the application-level `JWT_SECRET` environment variable.
+
+The test secret is intended exclusively for automated testing. Never reuse it in a production environment or commit real application secrets to version control.
+
+### 3. Run the Application
+
+```bash
+mvn spring-boot:run
+```
+
+The application runs on:
+
+`http://localhost:8080`
+
+### 4. Run the Tests
+
+```bash
+mvn clean test
+```
+
+Tests use the dedicated test configuration and do not require an externally configured JWT secret.
+
+---
+
+## Database
+
+Flowstate currently uses an H2 in-memory database.
+
+This provides a lightweight database environment for development and testing without requiring an external database server.
+
+**Current limitation:** Data is not persistent across application restarts.
+
+A migration to PostgreSQL is planned for a future development stage.
+
+---
+
+## Testing
+
+Flowstate includes automated unit and integration tests covering:
+
+- Authentication and registration.
+- Task operations and ownership isolation.
+- Category management.
+- Analytics calculations.
+- JWT generation.
+- Application information.
+- Validation and exception handling.
+
+**Current test suite: 61 passing tests.**
+
+---
+
+## Entity Relationship Diagram
+
+The following diagram illustrates the relationships between Flowstate's database entities.
+
+```mermaid
+erDiagram
+    USER {
+        Long id PK
+        String email UK
+        String password
+        Role role
+        LocalDateTime createdAt
+    }
+
+    TASK {
+        Long id PK
+        String title
+        String description
+        Boolean completed
+        Boolean deleted
+        LocalDateTime createdAt
+        LocalDateTime completedAt
+        Long user_id FK
+        Long category_id FK
+    }
+
+    CATEGORY {
+        Long id PK
+        String name UK
+        String description
+    }
+
+    USER ||--o{ TASK : creates
+    CATEGORY o|--o{ TASK : categorizes
+```
+
+---
+
+## System Architecture
+
+Flowstate follows a layered architecture that separates API handling,
+business logic, data transfer, and persistence.
+
+```mermaid
+flowchart TB
+    Client["Client / API Consumer"]
+
+    subgraph Application["Spring Boot Application"]
+        direction TB
+
+        subgraph Security["Security Layer"]
+            SecurityFilter["Spring Security Filter Chain"]
+            JWT["JWT Authentication<br/>Token Validation"]
+        end
+
+        subgraph API["API Layer"]
+            AuthController["Auth Controller"]
+            TaskController["Task Controller"]
+            CategoryController["Category Controller"]
+            AnalyticsController["Analytics Controller"]
+            InfoController["Info Controller"]
+        end
+
+        subgraph Business["Business Logic Layer"]
+            AuthService["Auth Service"]
+            TaskService["Task Service"]
+            CategoryService["Category Service"]
+            AnalyticsService["Analytics Service"]
+        end
+
+        subgraph Mapping["Data Transfer"]
+            DTO["Request / Response DTOs"]
+            Mapper["DTO Mappers"]
+        end
+
+        subgraph Persistence["Persistence Layer"]
+            UserRepo["User Repository"]
+            TaskRepo["Task Repository"]
+            CategoryRepo["Category Repository"]
+        end
+
+        ExceptionHandler["Global Exception Handler"]
+        Actuator["Spring Boot Actuator<br/>Health Endpoint"]
+    end
+
+    subgraph Database["Database"]
+        H2[("H2 In-Memory Database")]
+        Users[("Users")]
+        Tasks[("Tasks")]
+        Categories[("Categories")]
+    end
+
+    Client --> SecurityFilter
+    SecurityFilter --> JWT
+    JWT --> API
+
+    Client -. "Register / Login" .-> AuthController
+    Client -. "Health Check" .-> Actuator
+
+    AuthController --> AuthService
+    TaskController --> TaskService
+    CategoryController --> CategoryService
+    AnalyticsController --> AnalyticsService
+
+    API <--> DTO
+    DTO <--> Mapper
+
+    AuthService --> UserRepo
+    TaskService --> TaskRepo
+    TaskService --> CategoryRepo
+    AnalyticsService --> TaskRepo
+    AnalyticsService --> CategoryRepo
+    CategoryService --> CategoryRepo
+
+    UserRepo --> Users
+    TaskRepo --> Tasks
+    CategoryRepo --> Categories
+
+    Users --- H2
+    Tasks --- H2
+    Categories --- H2
+
+    API -. "Errors" .-> ExceptionHandler
+
+    classDef security fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef api fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef service fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef persistence fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef database fill:#f1f5f9,stroke:#64748b,color:#1e293b
+
+    class SecurityFilter,JWT security
+    class AuthController,TaskController,CategoryController,AnalyticsController,InfoController api
+    class AuthService,TaskService,CategoryService,AnalyticsService service
+    class UserRepo,TaskRepo,CategoryRepo persistence
+    class H2,Users,Tasks,Categories database
+```
+
+---
+
+## Planned Development
+
+The following improvements are planned for future development.
+
+### 1. Focus Session Management
+
+Introduce focus sessions associated with individual tasks.
+
+Planned capabilities:
+
+- Start, pause, resume, and complete focus sessions.
+- Associate sessions with specific tasks.
+- Record session start and end times.
+- Track actual focused duration.
+- Maintain a history of completed sessions.
+
+### 2. Focus Duration Analytics
+
+Extend existing productivity analytics beyond task completion.
+
+Planned insights:
+
+- Daily and weekly focused hours.
+- Average focus session duration.
+- Total time spent on individual tasks.
+- Focus session frequency.
+- Comparisons between task completion and actual focused time.
+
+### 3. Caching
+
+Introduce caching to reduce repeated database queries and improve response times.
+
+Potential applications:
+
+- Cache frequently accessed category information.
+- Cache suitable productivity statistics.
+- Reduce repeated retrieval of relatively stable application data.
+- Implement cache invalidation when underlying task or category data changes.
+
+Caching strategies will be evaluated based on actual usage patterns and performance requirements.
+
+### 4. API Rate Limiting
+
+Introduce request limits to protect API resources and reduce abusive traffic.
+
+Potential applications:
+
+- Restrict excessive login attempts.
+- Apply request limits to authentication endpoints.
+- Prevent individual clients from overwhelming API resources.
+
+### 5. Persistent Database Storage
+
+Migrate from H2 in-memory storage to PostgreSQL to support persistent user and application data.
+
+### 6. Database and Query Optimization
+
+Improve database performance as application usage grows.
+
+Potential improvements:
+
+- Introduce appropriate database indexes.
+- Optimize analytics queries.
+- Reduce unnecessary database access.
+- Evaluate query performance under larger datasets.
+
+### 7. Expanded Monitoring and Deployment
+
+- Expand monitoring beyond basic health checks.
+- Introduce additional application metrics.
+- Containerize the application with Docker.
+- Prepare the application for deployment.
+
+---
+
+## Current Limitations
+
+- Uses an in-memory H2 database; data does not persist across application restarts.
+- Category management currently supports creation and retrieval only. Category updates and deletion are not yet implemented.
+- Categories are currently shared globally rather than owned by individual users.
+- No focus session or duration tracking yet.
+- No API rate limiting yet.
+- No caching layer yet.
+- No frontend application.
+- No production deployment configuration.
+
+These limitations represent featuresas are currently being implemented. They will be implemented in a couple of weeks
+
+---
+
+## License
+
+A license has not yet been selected.

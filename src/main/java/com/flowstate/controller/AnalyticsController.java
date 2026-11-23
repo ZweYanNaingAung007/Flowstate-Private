@@ -6,6 +6,8 @@ import com.flowstate.dto.DailyProductivityResponse;
 import com.flowstate.dto.WeeklyProductivityResponse;
 import com.flowstate.service.AnalyticsService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/analytics")
+@SecurityRequirement(name = "bearerAuth")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;

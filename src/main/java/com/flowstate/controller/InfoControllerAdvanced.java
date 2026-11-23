@@ -1,6 +1,9 @@
 package com.flowstate.controller;
 
 import com.flowstate.config.AppProperties;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/info")
+@SecurityRequirement(name = "bearerAuth")
 public class InfoControllerAdvanced {
 
     private final AppProperties appProperties;

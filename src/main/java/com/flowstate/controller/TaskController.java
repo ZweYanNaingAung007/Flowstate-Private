@@ -6,6 +6,7 @@ import com.flowstate.entity.Task;
 import com.flowstate.mapper.TaskMapper;
 import com.flowstate.service.TaskService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -35,6 +36,7 @@ import java.util.Map;
 @Validated
 @RestController
 @RequestMapping("/api/v1/tasks")
+@SecurityRequirement(name = "bearerAuth")
 public class TaskController {
 
     private final TaskService taskService;
