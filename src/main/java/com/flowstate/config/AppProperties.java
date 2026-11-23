@@ -24,3 +24,4 @@ public class AppProperties {
     @Max(100)
     private int maxTasksPerPage;
 }
+
