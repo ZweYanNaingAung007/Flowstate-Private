@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/info-advanced")
+@RequestMapping("/api/v1/info")
 public class InfoControllerAdvanced {
 
     private final AppProperties appProperties;

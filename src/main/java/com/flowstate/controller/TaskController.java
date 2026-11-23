@@ -3,7 +3,9 @@ package com.flowstate.controller;
 import com.flowstate.dto.TaskRequest;
 import com.flowstate.dto.TaskResponse;
 import com.flowstate.entity.Task;
+import com.flowstate.mapper.TaskMapper;
 import com.flowstate.service.TaskService;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,16 +33,17 @@ import java.util.List;
 import java.util.Map;
 
 @Validated
-@RestController // @Controller and @ResponseBody
+@RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
 
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    //Constructor Injection
-    //@Autowired
-    public TaskController(TaskService taskService) {
+    // Constructor injection
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @GetMapping("/search")
@@ -51,24 +54,25 @@ public class TaskController {
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size,
             @RequestParam(defaultValue = "createdAt")
             @Pattern(
-                regexp = "id|title|description|completed|createdAt",
-                message = "Sort field must be one of: id, title, description, completed, createdAt."
+                    regexp = "id|title|description|completed|createdAt",
+                    message = "Sort field must be one of: id, title, description, completed, createdAt."
             ) String sortBy,
-            @RequestParam(defaultValue = "DESC") 
+            @RequestParam(defaultValue = "DESC")
             @Pattern(
-                regexp = "(?i)ASC|DESC",
-                message = "Sort direction must be ASC or DESC."
+                    regexp = "(?i)ASC|DESC",
+                    message = "Sort direction must be ASC or DESC."
             ) String sortDir) {
-            Sort sort = sortDir.equalsIgnoreCase("ASC") ?
-                    Sort.by(sortBy).ascending() :
-                    Sort.by(sortBy).descending();
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Task> taskPage;
 
         if (title != null && completed != null) {
-            // Filter by both
+            // Filter by both title and completion status
             taskPage = taskService.searchTasksByTitleAndCompletion(
                     title, completed, pageable
             );
@@ -76,21 +80,16 @@ public class TaskController {
             // Filter by title only
             taskPage = taskService.searchTasksByTitle(title, pageable);
         } else if (completed != null) {
-            // Filter completion only
+            // Filter by completion status only
             taskPage = taskService.getTasksByCompletion(completed, pageable);
         } else {
+            // Return all tasks
             taskPage = taskService.getAllTasks(pageable);
         }
 
         List<TaskResponse> tasks = taskPage.getContent()
                 .stream()
-                .map(task -> new TaskResponse(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getCompleted(),
-                        task.getCreatedAt(),
-                        null))
+                .map(taskMapper::toResponse)
                 .toList();
 
         Map<String, Object> response = new HashMap<>();
@@ -101,9 +100,8 @@ public class TaskController {
         response.put("hasNext", taskPage.hasNext());
         response.put("hasPrevious", taskPage.hasPrevious());
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
-
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllTasks(
@@ -111,29 +109,25 @@ public class TaskController {
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size,
             @RequestParam(defaultValue = "createdAt")
             @Pattern(
-                regexp = "id|title|description|completed|createdAt",
-                message = "Sort field must be one of: id, title, description, completed, createdAt."
+                    regexp = "id|title|description|completed|createdAt",
+                    message = "Sort field must be one of: id, title, description, completed, createdAt."
             ) String sortBy,
-            @RequestParam(defaultValue = "DESC") @Pattern(
-                regexp = "(?i)ASC|DESC",
-                message = "Sort direction must be ASC or DESC."
+            @RequestParam(defaultValue = "DESC")
+            @Pattern(
+                    regexp = "(?i)ASC|DESC",
+                    message = "Sort direction must be ASC or DESC."
             ) String sortDir) {
-            Sort sort = sortDir.equalsIgnoreCase("ASC") ?
-                Sort.by(sortBy).ascending() :
-                Sort.by(sortBy).descending();
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Task> taskPage = taskService.getAllTasks(pageable);
 
         List<TaskResponse> tasks = taskPage.getContent()
                 .stream()
-                .map(task -> new TaskResponse(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getCompleted(),
-                        task.getCreatedAt(),
-                        null))
+                .map(taskMapper::toResponse)
                 .toList();
 
         Map<String, Object> response = new HashMap<>();
@@ -144,24 +138,30 @@ public class TaskController {
         response.put("hasNext", taskPage.hasNext());
         response.put("hasPrevious", taskPage.hasPrevious());
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/{id}")
-    public TaskResponse getTaskById (@PathVariable Long id) {
+    public TaskResponse getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest task) {
+    public ResponseEntity<TaskResponse> createTask(
+            @Valid @RequestBody TaskRequest task) {
+
         TaskResponse savedTask = taskService.createTask(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(savedTask);
     }
 
     @PutMapping("/{id}")
-    public TaskResponse updateTask (@PathVariable Long id,
-                            @Valid @RequestBody TaskRequest updatedTask) {
+    public TaskResponse updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskRequest updatedTask) {
+
         return taskService.updateTask(id, updatedTask);
     }
 
@@ -172,19 +172,16 @@ public class TaskController {
     }
 
     @GetMapping("/completed/{status}")
-    public List<TaskResponse> getTasksByCompletions(@PathVariable boolean status) {
+    public List<TaskResponse> getTasksByCompletions(
+            @PathVariable boolean status) {
+
         return taskService.getTasksByCompletionStatus(status);
     }
 
     @GetMapping("/search-by-title")
-    public List<TaskResponse> searchTasksByTitle(@RequestParam String title) {
+    public List<TaskResponse> searchTasksByTitle(
+            @RequestParam String title) {
+
         return taskService.searchTasksByTitle(title);
     }
-
-    /**
-     * 200 OK - Successful GET, PUT, DELETE
-     * 201 Created - Successful POST (we should return this)
-     * 404 Not Found - Resource doesn't exist
-     * 400 Bad Request - Invalid data
-     */
 }

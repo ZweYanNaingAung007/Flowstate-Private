@@ -22,6 +22,6 @@ public class RegisterRequest {
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9\\s]).+$",
         message = "Password must contain uppercase, lowercase, a digit, and a special character"
     )
-private String password;
+    private String password;
 
 }
