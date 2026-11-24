@@ -526,6 +526,26 @@ These limitations represent features are currently being implemented. They will 
 
 ---
 
-## License
+## Acknowledgements
 
-A license has not yet been selected.
+Flowstate was initially based on the LeetJourney Task Manager. The original implementation has been substantially modified and extended.
+
+## Major Contributions
+
+Implemented JWT-based authentication and Spring Security.
+
+Added user-specific task ownership and resource isolation.
+
+Introduced soft deletion and task completion timestamps.
+
+Developed productivity analytics and reporting endpoints.
+
+Expanded validation, exception handling, and automated testing.
+
+Improved API documentation and application configuration.
+
+## Licensing
+
+The original LeetJourney Task Manager code used as the starting point for Flowstate is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/).
+
+Flowstate contains substantial modifications and additional functionality. The original license continues to apply to the material derived from that project.
