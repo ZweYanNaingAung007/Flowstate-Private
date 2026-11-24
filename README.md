@@ -1,8 +1,8 @@
 # Flowstate
 
-**A Focus and Productivity Intelligence Platform**(I implemented Swagger UI to make it easier to test)
+**A Focus and Productivity Intelligence Platform**
 
-Flowstate is a backend-focused productivity platform designed to help users organize their work, track task completion, and gain insights into their productivity.
+Flowstate is a backend-focused productivity platform designed to help users organize their work, track task completion, and gain insights into their productivity. I also implemented Swagger UI to make it easier to test the application.
 
 Rather than focusing solely on task management, Flowstate aims to connect task completion with actual time spent working, eventually helping users understand not just what they accomplish, but how they spend their time accomplishing it.
 
@@ -229,7 +229,7 @@ git clone https://github.com/ZweYanNaingAung007/Flowstate-Private.git
 cd Flowstate-Private
 ```
 
-The repository is currently private. You need repository access to clone it.
+The repository is currently public.
 
 ### 2. Configure the JWT Secret
 
@@ -522,7 +522,7 @@ Potential improvements:
 - No frontend application.
 - No production deployment configuration.
 
-These limitations represent featuresas are currently being implemented. They will be implemented in a couple of weeks
+These limitations represent features are currently being implemented. They will be implemented in a couple of weeks or more
 
 ---
 
