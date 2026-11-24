@@ -238,9 +238,11 @@ The application requires a Base64-encoded JWT secret supplied through the `JWT_S
 For PowerShell:
 
 ```powershell
-$env:JWT_SECRET = [Convert]::ToBase64String(
-    [Security.Cryptography.RandomNumberGenerator]::GetBytes(32)
-)
+$rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+$bytes = New-Object byte[] 32
+$rng.GetBytes($bytes)
+$env:JWT_SECRET = [Convert]::ToBase64String($bytes)
+$rng.Dispose()
 ```
 
 This generates a random 256-bit secret for local development.
